@@ -16,8 +16,8 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: "Alzooka — Community Without Clutter",
-  description: "A social platform built for real human interaction, not algorithms.",
+  title: "Alzooka — Journal",
+  description: "A simple journal of posts from the Alzooka community.",
 };
 
 export default function RootLayout({

@@ -5,10 +5,7 @@ import { createBrowserClient } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
-import { Logo } from "@/app/components/Logo";
-import { NotificationBell } from "@/app/components/NotificationBell";
-import { UserSearch } from "@/app/components/UserSearch";
-import Header from "@/app/components/Header";
+import BlogHeader from "@/app/components/BlogHeader";
 import { usePostModals } from "@/app/contexts/PostModalsContext";
 import { ShareModal } from "@/app/components/ShareModal";
 import { LinkPreview } from "@/app/components/LinkPreview";
@@ -1658,30 +1655,12 @@ function FeedContent() {
     setPosting(false);
   }
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
-
   if (loading) {
     return (
       <div style={{ minHeight: "100vh" }}>
-        {/* Skeleton Header */}
-        <div style={{ 
-          height: 60, 
-          background: "rgba(0,0,0,0.3)", 
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 20px",
-          gap: 16
-        }}>
-          <div style={{ width: 100, height: 24, background: "rgba(255,255,255,0.1)", borderRadius: 4 }} />
-          <div style={{ flex: 1 }} />
-          <div style={{ width: 32, height: 32, background: "rgba(255,255,255,0.1)", borderRadius: "50%" }} />
-        </div>
-        
-        <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 16px" }}>
+        <BlogHeader user={null} userUsername={null} userAvatarUrl={null} />
+
+        <div className="blog-site-main">
           {/* Skeleton Post Composer */}
           <div style={{ 
             background: "rgba(0,0,0,0.2)", 
@@ -1743,14 +1722,13 @@ function FeedContent() {
 
   return (
     <>
-      <Header
+      <BlogHeader
         user={user}
         userUsername={userUsername}
-        currentPage="feed"
         userAvatarUrl={userAvatarUrl}
       />
 
-      <div className="container" style={{ paddingTop: 20, paddingBottom: 40 }}>
+      <main className="blog-site-main">
 
       {/* New Post Form */}
       <form onSubmit={handlePost} style={{ 
@@ -2293,13 +2271,14 @@ function FeedContent() {
           
           return visiblePosts.length === 0 ? (
             <p className="text-muted" style={{ textAlign: "center", padding: 40 }}>
-              No posts yet. Be the first to share something.
+              Nothing here yet. Write the first entry.
             </p>
           ) : (
             <>
               {visiblePosts.map((post) => (
                 <PostCard 
                   key={post.id} 
+                  blogLayout
                   post={post} 
                   user={user!} 
                   supabase={supabase}
@@ -2341,7 +2320,7 @@ function FeedContent() {
       </div>
 
       {/* Note: Post modals are now rendered globally by GlobalModalsRenderer in Providers.tsx */}
-      </div>
+      </main>
     </>
   );
 }
@@ -2524,7 +2503,8 @@ function PostCard({
   onOpenModal,
   onCommentAdded,
   reactions,
-  onReactionsChange
+  onReactionsChange,
+  blogLayout = false,
 }: {
   post: Post;
   user: User;
@@ -2537,6 +2517,7 @@ function PostCard({
   onCommentAdded: () => void;
   reactions: Reaction[];
   onReactionsChange: (reactions: Reaction[]) => void;
+  blogLayout?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
@@ -2597,15 +2578,16 @@ function PostCard({
 
   return (
     <article 
-      className="card" 
+      className={`card${blogLayout ? " blog-post-entry" : ""}`}
       id={`post-${post.id}`}
       style={isHighlighted ? { 
         boxShadow: "0 0 0 2px rgba(255, 255, 255, 0.3)",
         scrollMarginTop: 100,
       } : undefined}
     >
-      <div style={{ display: "flex", gap: 12 }}>
-        {/* Vote Buttons */}
+      <div style={{ display: "flex", gap: blogLayout ? 0 : 12 }}>
+        {/* Vote Buttons — hidden in blog journal layout */}
+        {!blogLayout && (
         <VoteButtons
           targetType="post"
           targetId={post.id}
@@ -2613,9 +2595,10 @@ function PostCard({
           voteTotals={voteTotals}
           onVote={onVote}
         />
+        )}
 
         {/* Post Content */}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           {/* Post Header */}
           <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Link 

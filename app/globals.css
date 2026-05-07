@@ -517,3 +517,36 @@ a:hover {
 .reaction-icon.active {
   color: var(--gold);
 }
+
+/* Blog layout (home journal) */
+.blog-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.blog-header-inner {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.blog-site-main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.blog-post-entry.card {
+  margin-bottom: 2rem;
+}
+
+.blog-post-entry.card:last-of-type {
+  margin-bottom: 0;
+}
